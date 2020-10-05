@@ -26,10 +26,23 @@ tr_val = torchvision.transforms.Compose([torchvision.transforms.Resize(256),
 def get_img(img_path):
     img = Image.open(img_path).convert("RGB")
     img = tr_val(img)
+    img = (img.view(1, img.shape[0], img.shape[1], img.shape[2]))  # Added batch size = 1
     return img
 
 
-def has_tomatoes(model, img):
+def get_vgg_model(model_path):
+    vgg_model = torchvision.models.vgg16(pretrained=False)
+    vgg_model.classifier._modules['6'] = nn.Linear(in_features=4096, out_features=2, bias=True)
+    vgg_model.load_state_dict(torch.load(model_path))
+    return vgg_model
+
+
+def has_tomatoes(img_path, model_path):
+    model = get_vgg_model(model_path)
+    print('Successfully loaded the model')
+    img = get_img(img_path)
+    print('Successfully loaded the image')
+
     y_pre = model(img)
     _, predicted = torch.max(y_pre.data, 1)
     classe = predicted.squeeze().numpy()
@@ -41,15 +54,7 @@ def has_tomatoes(model, img):
 
 if __name__ == '__main__':
     args = get_args()
-    vgg_model = torchvision.models.vgg16(pretrained=False)
-    vgg_model.classifier._modules['6'] = nn.Linear(in_features=4096, out_features=2, bias=True)
-    vgg_model.load_state_dict(torch.load(args.model))
-    print('Successfully loaded state dict')
-    img = get_img(args.img)
-    img = (img.view(1, img.shape[0], img.shape[1], img.shape[2])) # Added batch size = 1
-    print('Successfully loaded the image')
-
-    if has_tomatoes(vgg_model, img):
+    if has_tomatoes(args.img, args.model):
         print("There is some tomatoes !! Be careful ")
     else:
         print("No tomatoes detected here")
