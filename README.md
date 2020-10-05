@@ -40,7 +40,23 @@ Please insert the data in the project directory as follow :
 
 This repository present the results of both exercices : 
 
-First we successfully build a binary classifier that achieve more that *90%* accuracy and recall.
+First we successfully build a binary classifier that achieve more that **90%** accuracy and recall.
+
+The function has_tomatoes() is built ! Try it with the command `python detect.py -i image_path.ext `
+
+Example `python detect.py -i data/assignment_imgs/1bc35c0a1a67cb25f99bbfde2192dc28.jpeg ` 
+
+Should print the following :
+`
+There is some tomatoes !! Be careful
+` 
+
+And `python detect.py -i data/assignment_imgs/1b54ec8350f5dac91cf5bcec92bce32b.jpeg ` 
+
+Should print the following :
+`
+No tomatoes detected here
+` 
 
 Then we implemented a GradCam to get a localization module
 

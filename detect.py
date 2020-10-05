@@ -46,7 +46,7 @@ if __name__ == '__main__':
     vgg_model.load_state_dict(torch.load(args.model))
     print('Successfully loaded state dict')
     img = get_img(args.img)
-    img = (img.view(1, img.shape[0], img.shape[1], img.shape[2]))
+    img = (img.view(1, img.shape[0], img.shape[1], img.shape[2])) # Added batch size = 1
     print('Successfully loaded the image')
 
     if has_tomatoes(vgg_model, img):
