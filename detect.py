@@ -1,5 +1,8 @@
 import argparse
 import torchvision
+import torch
+import torch.nn as nn
+from PIL import Image
 
 
 def get_args():
@@ -27,17 +30,26 @@ def get_img(img_path):
 
 
 def has_tomatoes(model, img):
-    predict = model(img)
-    print(predict)
+    y_pre = model(img)
+    _, predicted = torch.max(y_pre.data, 1)
+    classe = predicted.squeeze().numpy()
+    if classe == 1:
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':
     args = get_args()
     vgg_model = torchvision.models.vgg16(pretrained=False)
+    vgg_model.classifier._modules['6'] = nn.Linear(in_features=4096, out_features=2, bias=True)
     vgg_model.load_state_dict(torch.load(args.model))
-
     print('Successfully loaded state dict')
     img = get_img(args.img)
-
+    img = (img.view(1, img.shape[0], img.shape[1], img.shape[2]))
     print('Successfully loaded the image')
-    has_tomatoes(vgg_model, img)
+
+    if has_tomatoes(vgg_model, img):
+        print("There is some tomatoes !! Be careful ")
+    else:
+        print("No tomatoes detected here")
